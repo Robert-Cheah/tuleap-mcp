@@ -1,6 +1,15 @@
 from typing import List, Dict, Any, Optional
 from ..client import TuleapClient
 
+def _slim_artifact(artifact: Dict[str, Any]) -> Dict[str, Any]:
+    """Return only essential fields from an artifact."""
+    return {
+        "id": artifact.get("id"),
+        "title": artifact.get("title"),
+        "status": artifact.get("status"),
+        "assignees": [a.get("display_name") for a in artifact.get("assignees", [])],
+        "last_modified_date": artifact.get("last_modified_date"),
+    }
 
 async def get_artifact_details(
     client: TuleapClient, artifact_id: int
@@ -20,7 +29,8 @@ async def search_artifacts(
         query_json = json.dumps(filters)
         endpoint = f"{endpoint}?query={query_json}"
 
-    return await client.get(endpoint)
+    results = await client.get_paginated(endpoint)
+    return [_slim_artifact(a) for a in results]
 
 
 async def update_artifact(

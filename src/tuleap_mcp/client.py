@@ -46,3 +46,41 @@ class TuleapClient:
 
     async def put(self, endpoint: str, json: Optional[Dict] = None) -> Any:
         return await self._request("PUT", endpoint, json=json)
+        
+    async def get_paginated(self, endpoint: str) -> list:
+        """Fetch all pages of a paginated endpoint."""
+        all_results = []
+        offset = 0
+        limit = 50
+
+        while True:
+            sep = "&" if "?" in endpoint else "?"
+            paginated_endpoint = f"{endpoint}{sep}limit={limit}&offset={offset}"
+            url = f"{self.api_url}{paginated_endpoint}"
+
+            async with httpx.AsyncClient() as client:
+                response = await client.request("GET", url, headers=self.headers)
+                try:
+                    response.raise_for_status()
+                    data = response.json()
+                    if isinstance(data, list):
+                        all_results.extend(data)
+                    else:
+                        return data  # non-list response, return as-is
+
+                    total = int(response.headers.get("X-Pagination-Size", 0))
+                    offset += limit
+
+                    if offset >= total:
+                        break
+                except httpx.HTTPStatusError as e:
+                    error_detail = e.response.text
+                    try:
+                        error_detail = e.response.json()
+                    except ValueError:
+                        pass
+                    raise TuleapAPIError(
+                        f"Tuleap API Error {e.response.status_code}: {error_detail}"
+                    )
+
+        return all_results
