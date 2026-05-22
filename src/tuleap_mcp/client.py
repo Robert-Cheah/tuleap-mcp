@@ -25,6 +25,8 @@ class TuleapClient:
                 # 204 No Content has no JSON body
                 if response.status_code == 204:
                     return None
+                if not response.text:
+                    return None
                 return response.json()
             except httpx.HTTPStatusError as e:
                 error_detail = e.response.text

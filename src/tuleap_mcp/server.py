@@ -111,6 +111,11 @@ async def get_epic_progress(epic_id: int) -> str:
     client = get_client()
     return str(await agile.get_epic_progress(client, epic_id))
 
+@mcp.tool()
+async def create_artifact(tracker_id: int, values: list) -> str:
+    """Create a new artifact in a specific tracker. Values should be a list of field dicts, e.g. [{"field_id": 2056, "value": "My Title"}]."""
+    client = get_client()
+    return str(await trackers.create_artifact(client, tracker_id, values))
 
 def main():
     mcp.run()

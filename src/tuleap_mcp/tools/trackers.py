@@ -32,5 +32,13 @@ async def update_artifact(
     """Update an artifact's fields or add a comment."""
     payload = {"values": values}
     if comment:
-        payload["comment"] = {"body": comment}
-    return await client.put(f"/artifacts/{artifact_id}", json=payload)
+        payload["comment"] = {"body": comment, "format": "text"}
+    result = await client.put(f"/artifacts/{artifact_id}", json=payload)
+    return result if result is not None else {"status": "success", "artifact_id": artifact_id}
+
+async def create_artifact(
+    client: TuleapClient, tracker_id: int, values: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """Create a new artifact in a tracker."""
+    payload = {"tracker": {"id": tracker_id}, "values": values}
+    return await client.post("/artifacts", json=payload)
