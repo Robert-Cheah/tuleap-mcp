@@ -42,7 +42,7 @@ async def update_artifact(
     """Update an artifact's fields or add a comment."""
     payload = {"values": values}
     if comment:
-        payload["comment"] = {"body": comment, "format": "text"}
+        payload["comment"] = {"body": comment, "format": "html"}
     result = await client.put(f"/artifacts/{artifact_id}", json=payload)
     return result if result is not None else {"status": "success", "artifact_id": artifact_id}
 

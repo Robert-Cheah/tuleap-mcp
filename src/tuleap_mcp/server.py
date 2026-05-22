@@ -40,7 +40,7 @@ async def get_artifact(artifact_id: int) -> str:
 async def update_artifact(
     artifact_id: int, values: list = None, comment: str = None
 ) -> str:
-    """Update an artifact's fields or add a comment. Values should be a list of dictionaries with field updates. At least one of values or comment is required."""
+    """Update an artifact's fields or add a comment. Comment supports HTML formatting (e.g. <b>bold</b>, <u>underline</u>, <br> for new line). At least one of values or comment is required."""
     client = get_client()
     if not values and not comment:
         return "Error: Must provide either values or comment to update."
