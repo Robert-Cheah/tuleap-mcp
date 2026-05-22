@@ -50,10 +50,10 @@ async def update_artifact(
 
 
 @mcp.tool()
-async def search_artifacts(tracker_id: int, query: str = None, assigned_to: int = None) -> str:
-    """Search for artifacts in a specific tracker. Optionally filter by assigned user ID."""
+async def search_artifacts(tracker_id: int, filters: dict = None) -> str:
+    """Search for artifacts in a specific tracker. Optionally pass filters as a dict, e.g. {"assigned_to": {"id": 119}} or {"status": "Open"}."""
     client = get_client()
-    return str(await trackers.search_artifacts(client, tracker_id, query, assigned_to))
+    return str(await trackers.search_artifacts(client, tracker_id, filters))
 
 
 @mcp.tool()

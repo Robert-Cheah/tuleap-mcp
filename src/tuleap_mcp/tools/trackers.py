@@ -10,19 +10,15 @@ async def get_artifact_details(
 
 
 async def search_artifacts(
-    client: TuleapClient, tracker_id: int, query: Optional[str] = None, assigned_to: Optional[int] = None
+    client: TuleapClient, tracker_id: int, filters: Optional[dict] = None
 ) -> List[Dict[str, Any]]:
-    """Search for artifacts in a tracker."""
+    """Search for artifacts in a tracker, with optional filters as a dict."""
     import json
 
-    if assigned_to:
-        query_json = json.dumps({"assigned_to": {"id": assigned_to}})
-        endpoint = f"/trackers/{tracker_id}/artifacts?query={query_json}"
-    else:
-        params = {"tracker_id": tracker_id}
-        if query:
-            params["query"] = query
-        return await client.get("/artifacts", params=params)
+    endpoint = f"/trackers/{tracker_id}/artifacts"
+    if filters:
+        query_json = json.dumps(filters)
+        endpoint = f"{endpoint}?query={query_json}"
 
     return await client.get(endpoint)
 
